@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.qb.store.mapper.DistrictMapper">
+	<!-- 根据上级行政地区编码查询对应的下级行政地区信息 -->
+	<!-- List<District> findSubByParent(String parent); -->
+	<select id="findSubByParent" resultType="cn.qb.store.entity.District">
+		select
+			parent,code,name
+		from
+			qb_dict
+		where
+			parent=#{parent}
+	</select>
+	
+	<!-- 根据对应编码查询对应行政地区信息 -->
+	<!-- District findOneByCode(String code); -->
+	<select id="findOneByCode" resultType="cn.qb.store.entity.District">
+		select
+			parent,code,name
+		from
+			qb_dict
+		where
+			code=#{code}
+	</select>
+</mapper>

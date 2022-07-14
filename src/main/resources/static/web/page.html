@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>商城</title>
+</head>
+<body>
+<h3>登陆成功啦!</h3>
+<span id="up" style="background-color: grey;">修改密码</span>
+<span id="ui" style="background-color: grey;">个人资料</span>
+<span id="ua" style="background-color: grey;">修改头像</span>
+<span style="background-color: grey;"><a href="address.html">管理地址</a> </span>
+<div id="upassword_div" style="display: none;">
+	<form id="upassword_form">
+		<table style="text-align: right;">
+			<tr>
+				<td>原密码：</td>
+				<td><input name="old_password" /></td>
+			</tr>
+			<tr>
+				<td>新密码：</td>
+				<td><input name="new_password" /></td>
+			</tr>
+			<tr>
+				<td colspan="2" style="text-align:center;">
+					<input id="upassword_button" type="button" value="修改">
+				</td>
+			</tr>
+		</table>
+	</form>
+</div>
+<div id="uinfo_div" style="display: none;">
+	<form id="uinfo_form">
+		<table style="text-align: right;">
+			<tr>
+				<td>用户名：</td>
+				<td><input id="user_name" readonly="readonly"/></td>
+			</tr>
+			<tr>
+				<td>手机：</td>
+				<td><input id="user_phone" name="phone" /></td>
+			</tr>
+			<tr>
+				<td>邮箱：</td>
+				<td><input id="user_email" name="email" /></td>
+			</tr>
+			<tr>
+				<td>性别：</td>
+				<td>
+					<input type="radio" id="man" name="gender" value="1"><label for="man">男</label>
+					<input type="radio" id="woman" name="gender" value="0"><label for="woman">女</label>
+					<input type="radio" id="secret" name="gender" value="2"><label for="secret">保密</label>
+				</td>
+			</tr>
+			<tr>
+				<td colspan="2" style="text-align:center;">
+					<input id="uinfo_button" type="button" value="修改">
+				</td>
+			</tr>
+		</table>
+	</form>
+</div>
+<div id="uavatar_div" style="display: none;">
+	<form id="upload_form" enctype="multipart/form-data">
+	<div style="width: 100px; height: 100px;">
+		<label for="file">
+			<img id="a_img" src="../images/user.png" width="100px">
+		</label>
+	</div>
+	<div>
+		<input id="file" type="file" name="file"/>
+	</div>
+	<div>
+		<input id="upload_button" type="button" value="上传">
+	</div>
+</form>
+</div>
+<script type="text/javascript" src="../js/jquery3.6.0.js"></script>
+<script type="text/javascript" src="../js/jquery.cookie.js"></script>
+<script type="text/javascript">
+	$("#up").click(function(){
+		$("#uinfo_div").hide()
+		$("#uavatar_div").hide();
+		$("#upassword_div").toggle();
+	});
+	$("#ui").click(function(){
+		$("#upassword_div").hide();
+		$("#uavatar_div").hide();
+		$("#uinfo_div").toggle();
+	});
+	$("#ua").click(function(){
+		$("#upassword_div").hide();
+		$("#uinfo_div").hide();
+		$("#uavatar_div").toggle();
+	});
+	$(document).ready(function(){
+		var url = "../user/info.do";
+		$.ajax({
+			"url":url,
+			"type":"get",
+			"dataType":"json",
+			"success":function(json){
+				if(json.state == 1){
+					var uname = json.data.username;
+					var uphone = json.data.phone;
+					var uemail = json.data.email;
+					var ugender = json.data.gender;
+					$("#user_name").get(0).placeholder = uname;
+					$("#user_phone").val(uphone);
+					$("#user_email").val(uemail);
+					if(ugender == 0){
+						$("#woman").attr("checked","checked");
+					}
+					if(ugender == 1){
+						$("#man").attr("checked","checked");
+					}
+					if(ugender == 2){
+						$("#secret").attr("checked","checked");
+					}
+					if($.cookie("avatar") != null){
+						$("#a_img").attr("src",$.cookie("avatar"));
+					}
+				}else if(json.state == 4){
+					alert(json.message);
+				}else{
+					alert("出现未知错误，请稍后重试...");
+				}
+			}
+		});
+	});
+	$("#upload_button").click(function(){
+		var url = "../user/upload.do";
+		var data = new FormData($("#upload_form")[0]);
+		$.ajax({
+			"url":url,
+			"data":data,
+			"contentType":false,
+			"processData":false,
+			"type":"post",
+			"dataType":"json",
+			"success":function(json){
+				if(json.state == 1){
+					alert("修改头像成功!");
+					$("#a_img").attr("src",json.data);
+					$.cookie("avatar",json.data,{
+						expires:1
+					});
+				}else if(json.state == 4){
+					alert(json.message);
+				}else if(json.state == 6){
+					alert(json.message);
+				}else if(json.state == 7){
+					alert(json.message);
+				}else if(json.state == 8){
+					alert(json.message);
+				}else if(json.state == 9){
+					alert(json.message);
+				}else if(json.state == 10){
+					alert(json.message);
+				}
+			},"error":function(xhr,text,errorThrown){
+				alert("登录超时，请重新登陆一下吧...")
+				location.href = "login.html";
+			}
+		});
+	});
+	$("#uinfo_button").click(function(){
+		var url = "../user/uinfo.do";
+		var data = $("#uinfo_form").serialize();
+		$.ajax({
+			"url":url,
+			"data":data,
+			"type":"post",
+			"dataType":"json",
+			"success":function(json){
+				if(json.state == 1){
+					location.href = "page.html";
+				}else if(json.state == 4){
+					alert(json.message);
+				}else if(json.state == 6){
+					alert(json.message);
+				}else{
+					alert("出现未知错误，请稍后重试...");
+				}
+			},"error":function(xhr,text,errorThrown){
+				alert("登录超时，请重新登陆一下吧...")
+				location.href = "login.html";
+			}
+		});
+	});
+	$("#upassword_button").click(function(){
+		var url = "../user/upassword.do";
+		var data = $("#upassword_form").serialize();
+		$.ajax({
+			"url":url,
+			"data":data,
+			"type":"post",
+			"dataType":"json",
+			"success":function(json){
+				if(json.state == 1){
+					location.href = "login.html";
+				}else if(json.state == 4){
+					alert(json.message);
+				}else if(json.state == 5){
+					alert(json.message);
+				}else if(json.state == 6){
+					alert(json.message);
+				}else{
+					alert("出现未知错误，请稍后重试...");
+				}
+			},"error":function(xhr,text,errorThrown){
+				alert("登录超时，请重新登陆一下吧...")
+				location.href = "login.html";
+			}
+		});
+	});
+</script>
+</body>
+</html>

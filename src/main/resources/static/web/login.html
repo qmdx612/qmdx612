@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>商城</title>
+</head>
+<body>
+<body>
+<div>
+	<form id="login-form">
+		<table style="text-align: right;">
+			<tr>
+				<td>用户名：</td>
+				<td><input name="username" /></td>
+			</tr>
+			<tr>
+				<td>密码：</td>
+				<td><input name="password" /></td>
+			</tr>
+			<tr>
+				<td colspan="2" style="text-align:center;">
+					<input id="login-button" type="button" value="登录">
+				</td>
+			</tr>
+		</table>
+	</form>
+</div>
+<script type="text/javascript" src="../js/jquery3.6.0.js"></script>
+<script type="text/javascript" src="../js/jquery.cookie.js"></script>
+<script type="text/javascript">
+	$("#login-button").click(function(){
+		var url = "../user/login.do";
+		var data = $("#login-form").serialize();
+		$.ajax({
+			"url":url,
+			"data":data,
+			"type":"post",
+			"dataType":"json",
+			"success":function(json){
+				if(json.state == 1){
+					//将头像路径存入cookie
+					$.cookie("avatar",json.data.avatar,{
+						expires:1
+					});
+					location.href = "page.html";
+				} else if(json.state == 4){
+					alert(json.message);
+				} else if(json.state == 5){
+					alert(json.message);
+				} else {
+					alert("出现未知错误，重新打开网页再试一次吧...");
+				}
+			}
+		});
+	});
+</script>
+</body>
+</html>

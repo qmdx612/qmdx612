@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.qb.store.mapper.AddressMapper">
+	<!-- 添加地址数据 -->
+	<!-- Integer addNew(UserAddress userAddress); -->
+	<insert id="addNew" parameterType="cn.qb.store.entity.UserAddress" useGeneratedKeys="true" keyProperty="id">
+		insert into qb_address(
+			name,province,city,
+			area,district,address,
+			zip,phone,tag,is_default,
+			uid,create_user,create_time,
+			modified_user,modified_time
+		)
+		values(
+			#{name},#{province},#{city},
+			#{area},#{district},#{address},
+			#{zip},#{phone},#{tag},#{isDefault},
+			#{uid},#{createUser},#{createTime},
+			#{modifiedUser},#{modifiedTime}
+		)
+	</insert>
+	
+	<!-- 根据uid查找数据数量 -->
+	<!-- Integer getCountByUid(int uid); -->
+	<select id="getCountByUid" resultType="java.lang.Integer">
+		select count(id) from qb_address where uid=#{uid}
+	</select>
+	
+	<!-- 根据uid查询该用户所拥有的地址数据 -->
+	<!-- List<UserAddress> getAddressList(int uid); -->
+	<select id="getAddressList" resultType="cn.qb.store.entity.UserAddress">
+		select
+			id,tag,name,district,address,phone,is_default isDefault
+		from
+			qb_address
+		where
+			uid=#{uid}
+		order by
+			is_default desc,
+			modified_time desc
+	</select>
+	
+	<!-- 根据地址信息的id查询其相关信息 -->
+	<!-- UserAddress findByid(Integer id); -->
+	<select id="findByid" resultType="cn.qb.store.entity.UserAddress">
+		select
+			uid,is_default isDefault
+		from
+			qb_address
+		where
+			id=#{id}
+	</select>
+	
+	<!-- 根据id更改相应的默认 -->
+	<!-- Integer updateDefaultById(Integer id); -->
+	<update id="updateDefaultById">
+		update qb_address
+		set
+			is_default=1
+		where
+			id=#{id}
+	</update>
+	
+	<!-- 根据uid更改相应的默认 -->
+	<!-- Integer updateDefaultByUid(Integer uid); -->
+	<update id="updateDefaultByUid">
+		update qb_address
+		set
+			is_default=0
+		where
+			uid=#{uid}
+	</update>
+	
+	<!-- 根据地址id删除指定的地址信息 -->
+	<!-- Integer deleteAddress(Integer id); -->
+	<delete id="deleteAddress">
+		delete
+		from
+			qb_address
+		where
+			id=#{id}
+	</delete>
+	
+	<!-- 根据id查询最后修改时间的地址 -->
+	<!-- UserAddress findLastAddressByUid(Integer id); -->
+	<select id="findLastAddressByUid" resultType="cn.qb.store.entity.UserAddress">
+		select
+			id
+		from
+			qb_address
+		where
+			uid=#{uid}
+		order by
+			modified_time desc
+		limit
+			0,1
+	</select>
+</mapper>
